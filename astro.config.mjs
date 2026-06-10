@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://heretek-ai.github.io',
+  site: 'https://heretek-re.github.io',
   base: '/RE-Library',
   integrations: [mdx()],
   build: {

@@ -1,0 +1,22 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  summary: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  platforms?: string[];
+}
+
+const { href, title, summary, difficulty, platforms = [] } = Astro.props;
+---
+
+<a class="card" href={href}>
+  <h3>{title}</h3>
+  <p>{summary}</p>
+  {(difficulty || platforms.length > 0) && (
+    <div class="badges">
+      {difficulty && <span class={`badge ${difficulty}`}>{difficulty}</span>}
+      {platforms.map((p) => <span class="badge">{p}</span>)}
+    </div>
+  )}
+</a>

@@ -1,0 +1,22 @@
+---
+// Pagefind search box. Pagefind builds a static index at build time and
+// ships a small JS bundle. We mount the UI into #search on DOMContentLoaded.
+const base = import.meta.env.BASE_URL;
+---
+
+<div id="search"></div>
+
+<script is:inline define:vars={{ base }}>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof window.PagefindUI === 'undefined') return;
+    new window.PagefindUI({
+      element: '#search',
+      baseUrl: base,
+      showSubResults: true,
+      showImages: false,
+      resetStyles: false,
+      autofocus: true,
+      placeholder: 'Search the library…',
+    });
+  });
+</script>

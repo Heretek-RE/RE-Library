@@ -1,0 +1,26 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '~/content.config';
+
+const allEntries = await getCollection('entries');
+const counts = Object.fromEntries(CATEGORIES.map((c) => [c, 0]));
+for (const e of allEntries) counts[e.data.category]++;
+
+const base = import.meta.env.BASE_URL;
+const cleanBase = base.endsWith('/') ? base : base + '/';
+---
+
+<Layout title="Categories — RE-Library">
+  <section class="container">
+    <h1>Categories</h1>
+    <div class="card-grid">
+      {CATEGORIES.map((cat) => (
+        <a class="card" href={`${cleanBase}categories/${cat}/`}>
+          <h3>{cat}</h3>
+          <p>{counts[cat]} {counts[cat] === 1 ? 'entry' : 'entries'}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,58 @@
+---
+import '~/styles/global.css';
+import { CATEGORIES } from '~/content.config';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'A context7-style knowledge base for Reverse Engineering — techniques, anti-analysis bypass, Android/iOS, and more.' } = Astro.props;
+const isBase = import.meta.env.BASE_URL;
+const base = isBase.endsWith('/') ? isBase : isBase + '/';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="alternate" type="application/rss+xml" title="RE-Library" href={`${base}rss.xml`} />
+    <title>{title}</title>
+    <!-- Pagefind UI -->
+    <link href={`${base}pagefind/pagefind-ui.css`} rel="stylesheet" />
+    <script src={`${base}pagefind/pagefind-ui.js`} is:inline></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container-wide">
+        <a href={`${base}`} class="brand">RE-Library</a>
+        <nav>
+          <a href={`${base}categories/${CATEGORIES[0]}/`}>Categories</a>
+          <a href={`${base}about/`}>About</a>
+          <a href="https://github.com/Heretek-AI/RE-Library" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container-wide">
+        <p>
+          RE-Library is a community-curated knowledge base for reverse engineering.
+          Content is provided for educational and research purposes.
+        </p>
+        <p>
+          <a href="https://github.com/Heretek-AI/RE-Library/blob/main/CONTRIBUTING.md">Contribute</a>
+          ·
+          <a href="https://github.com/Heretek-AI/RE-Library/blob/main/LICENSE">MIT License</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

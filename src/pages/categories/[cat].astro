@@ -1,0 +1,51 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import EntryCard from '~/components/EntryCard.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '~/content.config';
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((cat) => ({ params: { cat } }));
+}
+
+const { cat } = Astro.params;
+const base = import.meta.env.BASE_URL;
+const cleanBase = base.endsWith('/') ? base : base + '/';
+
+const entries = (await getCollection('entries'))
+  .filter((e) => e.data.category === cat)
+  .sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<Layout title={`${cat} — RE-Library`}>
+  <section class="container">
+    <p style="margin-top: 2rem;"><a href={`${cleanBase}categories/`}>← All categories</a></p>
+    <h1 style="text-transform: capitalize;">{cat}</h1>
+    <p style="color: var(--fg-dim);">
+      {entries.length} {entries.length === 1 ? 'entry' : 'entries'} in this category.
+    </p>
+
+    {entries.length === 0 ? (
+      <p style="color: var(--fg-muted);">
+        No entries yet. The first batch is being written; see
+        <a href="https://github.com/Heretek-AI/RE-Library/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>
+        to add one.
+      </p>
+    ) : (
+      <div class="card-grid">
+        {entries.map((entry) => {
+          const slug = entry.id.replace(/\.md$/, '');
+          return (
+            <EntryCard
+              href={`${cleanBase}${slug}/`}
+              title={entry.data.title}
+              summary={entry.data.summary}
+              difficulty={entry.data.difficulty}
+              platforms={entry.data.platforms}
+            />
+          );
+        })}
+      </div>
+    )}
+  </section>
+</Layout>

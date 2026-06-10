@@ -1,0 +1,73 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import EntryCard from '~/components/EntryCard.astro';
+import Search from '~/components/Search.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '~/content.config';
+
+const allEntries = await getCollection('entries');
+
+// Per-category counts, in canonical category order.
+const counts = Object.fromEntries(CATEGORIES.map((c) => [c, 0]));
+for (const e of allEntries) counts[e.data.category]++;
+
+// Most recently updated entries (top 6).
+const recent = [...allEntries]
+  .sort((a, b) => (a.data.updated < b.data.updated ? 1 : -1))
+  .slice(0, 6);
+
+const base = import.meta.env.BASE_URL;
+const cleanBase = base.endsWith('/') ? base : base + '/';
+---
+
+<Layout title="RE-Library — A knowledge base for Reverse Engineering">
+  <section class="container">
+    <div class="hero">
+      <h1>RE-Library</h1>
+      <p>
+        A curated knowledge base for reverse engineering — techniques, anti-analysis
+        bypass, mobile internals, packers, and the tools that pull them apart.
+        Read it on the web, or wire it into Claude / Cursor / any MCP client.
+      </p>
+      <div class="badges">
+        <span class="badge">{allEntries.length} entries</span>
+        <span class="badge">{CATEGORIES.length} categories</span>
+        <span class="badge">MIT licensed</span>
+      </div>
+    </div>
+
+    <Search />
+
+    <section>
+      <h2>Categories</h2>
+      <div class="card-grid">
+        {CATEGORIES.map((cat) => (
+          <a class="card" href={`${cleanBase}categories/${cat}/`}>
+            <h3>{cat}</h3>
+            <p>{counts[cat]} {counts[cat] === 1 ? 'entry' : 'entries'}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {recent.length > 0 && (
+      <section>
+        <h2>Recently updated</h2>
+        <div class="card-grid">
+          {recent.map((entry) => {
+            const slug = entry.id.replace(/\.md$/, '');
+            return (
+              <EntryCard
+                href={`${cleanBase}${slug}/`}
+                title={entry.data.title}
+                summary={entry.data.summary}
+                difficulty={entry.data.difficulty}
+                platforms={entry.data.platforms}
+              />
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </section>
+</Layout>

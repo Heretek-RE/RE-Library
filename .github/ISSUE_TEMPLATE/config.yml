@@ -1,0 +1,14 @@
+# Configuration for the issue chooser. Linked resources appear at the
+# top of the "New issue" page so contributors can find the right
+# template faster.
+blank_issues_enabled: false
+contact_links:
+  - name: RE-Library documentation
+    url: https://heretek-ai.github.io/RE-Library/about/
+    about: How entries are organised, the schema, and the entry template.
+  - name: CONTRIBUTING guide
+    url: https://github.com/Heretek-AI/RE-Library/blob/main/CONTRIBUTING.md
+    about: How to add or update an entry, and the content policy.
+  - name: GitHub Discussions (coming soon)
+    url: https://github.com/Heretek-AI/RE-Library/discussions
+    about: Open-ended questions, brainstorming, and announcements. (If the Discussions tab isn't enabled, open an issue and tag it `question`.)

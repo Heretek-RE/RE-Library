@@ -1,0 +1,83 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('entries');
+  return entries.map((entry) => {
+    // entry.id is the path with .md; strip the extension for clean URLs.
+    // e.g. "android/01-apk-structure.md" -> "android/01-apk-structure"
+    const slug = entry.id.replace(/\.md$/, '');
+    return { params: { slug }, props: { entry } };
+  });
+}
+
+interface Props {
+  entry: CollectionEntry<'entries'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const base = import.meta.env.BASE_URL;
+const cleanBase = base.endsWith('/') ? base : base + '/';
+
+// Resolve related entries for the cross-link section.
+const allEntries = await getCollection('entries');
+const relatedEntries = entry.data.related
+  .map((rel) => {
+    // Accept either a bare slug ("android-frida-basics") or a full path
+    // ("android/04-frida-android"). The latter is more robust.
+    return allEntries.find((e) => {
+      const eSlug = e.id.replace(/\.md$/, '');
+      return eSlug === rel || eSlug.endsWith('/' + rel);
+    });
+  })
+  .filter((e): e is CollectionEntry<'entries'> => Boolean(e));
+---
+
+<Layout title={`${entry.data.title} — RE-Library`} description={entry.data.summary}>
+  <article class="container">
+    <p style="margin-top: 2rem;">
+      <a href={`${cleanBase}categories/${entry.data.category}/`}>
+        ← {entry.data.category}
+      </a>
+    </p>
+
+    <h1>{entry.data.title}</h1>
+    <div class="entry-meta">
+      <span>Updated {entry.data.updated}</span>
+      {entry.data.platforms.length > 0 && (
+        <>
+          {' · '}
+          <span>{entry.data.platforms.join(', ')}</span>
+        </>
+      )}
+    </div>
+    <div class="badges">
+      <span class={`badge ${entry.data.difficulty}`}>{entry.data.difficulty}</span>
+      {entry.data.tags.map((t) => <span class="badge">{t}</span>)}
+    </div>
+    <p class="entry-summary">{entry.data.summary}</p>
+
+    <Content />
+
+    {relatedEntries.length > 0 && (
+      <section class="entry-related">
+        <h2>Related</h2>
+        <ul>
+          {relatedEntries.map((rel) => {
+            const relSlug = rel.id.replace(/\.md$/, '');
+            return (
+              <li>
+                <a href={`${cleanBase}${relSlug}/`}>{rel.data.title}</a>
+                {' — '}
+                <span style="color: var(--fg-muted);">{rel.data.summary}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
+  </article>
+</Layout>

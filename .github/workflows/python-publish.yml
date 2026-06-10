@@ -1,0 +1,88 @@
+name: Publish Python Package
+
+# Build and publish the `re-library-mcp` package to PyPI on every GitHub
+# release. The publish step uses PyPI's *trusted publishing* (OIDC) — no
+# API tokens stored in GitHub secrets. Before the first publish, a human
+# must register this workflow as a trusted publisher on PyPI; instructions
+# are in mcp-server/README.md.
+
+on:
+  release:
+    types: [published]
+  # Allow manual runs for dry-runs and emergency re-publishes. When run
+  # manually, you can pick the target index below.
+  workflow_dispatch:
+    inputs:
+      publish_to:
+        description: "Target index"
+        type: choice
+        required: true
+        default: testpypi
+        options:
+          - pypi
+          - testpypi
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build sdist + wheel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+
+      - name: Build
+        working-directory: mcp-server
+        run: python -m build
+
+      - name: Verify with twine
+        working-directory: mcp-server
+        run: |
+          python -m pip install --upgrade twine
+          twine check dist/*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: mcp-server/dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # The `pypi` environment is referenced so you can attach required
+    # reviewers / protection rules from the GitHub UI. Create it under
+    # Settings → Environments.
+    environment: pypi
+    permissions:
+      # Required for PyPI trusted publishing (OIDC).
+      id-token: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          # PEP 740 attestations — link the published artifact back to
+          # this workflow run.
+          attestations: true
+        # When the workflow is run manually, the input selects the
+        # target index. PyPI trusted publishing has to be registered
+        # separately for the test index as well (different OIDC subject).

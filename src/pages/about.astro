@@ -1,0 +1,54 @@
+---
+import Layout from '~/layouts/Layout.astro';
+---
+
+<Layout title="About — RE-Library">
+  <section class="container">
+    <h1>About RE-Library</h1>
+    <p>
+      RE-Library is a community-curated knowledge base for reverse engineering.
+      It exists because RE knowledge is scattered across blog posts, paid
+      courses, Discord screenshots, and Twitter threads — and because AI
+      assistants don't have a reliable, structured source of RE context to draw
+      on.
+    </p>
+
+    <h2>How it's organised</h2>
+    <p>
+      Every entry is a markdown file under <code>content/</code> with a YAML
+      frontmatter that gives it a category, platform, difficulty, and tags.
+      Entries are written for two audiences at once: a human browsing the site,
+      and an LLM reading the same content over the MCP server.
+    </p>
+
+    <h2>Two surfaces, one source</h2>
+    <p>
+      The same <code>content/</code> tree drives both the GitHub Pages site
+      and the MCP server. The site is static HTML built by Astro + Pagefind;
+      the MCP server is a Python package that fetches the raw markdown from
+      this repo on demand and serves it to any MCP-compatible client
+      (Claude Desktop, Cursor, Continue, etc.) over stdio.
+    </p>
+
+    <h2>DRM scope</h2>
+    <p>
+      The <code>drm/</code> category contains extensive technical documentation
+      on CDM architectures, security levels, key-ladder theory, attestation
+      flows, and historical attack patterns. By design, no specific DRM system
+      is named. The content describes the systems' behaviour, security models,
+      and protocol shapes — readers who know the space will recognise which
+      system is being described. The repo never types the names.
+    </p>
+    <p>
+      See <a href="https://github.com/Heretek-AI/RE-Library/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>
+      for the full content policy.
+    </p>
+
+    <h2>Contributing</h2>
+    <p>
+      New entries are welcome. The bar is "would this help the next person
+      doing this work?" not "is this novel research." See CONTRIBUTING.md for
+      the entry template, schema reference, and the DRM guardrail.
+    </p>
+  </section>
+</Layout>

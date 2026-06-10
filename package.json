@@ -1,0 +1,23 @@
+{
+  "name": "re-library",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A context7-style knowledge base for Reverse Engineering — GitHub Pages site + pip-installable MCP server.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^6.4.4",
+    "@astrojs/mdx": "^6.0.2",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/check": "^0.9.9",
+    "pagefind": "^1.5.2",
+    "typescript": "^5.6.3"
+  }
+}
